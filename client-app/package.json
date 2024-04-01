@@ -1,0 +1,6 @@
+{
+  "name": "client-app",
+  "dependencies": {
+    "shared-lib": "workspace:*"
+  }
+}

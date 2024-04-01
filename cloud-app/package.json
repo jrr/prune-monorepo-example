@@ -1,0 +1,6 @@
+{
+  "name": "cloud-app",
+  "dependencies": {
+    "shared-lib": "workspace:*"
+  }
+}
