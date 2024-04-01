@@ -1,6 +1,7 @@
 {
   "name": "prune-monorepo",
   "devDependencies": {
+    "prettier": "3.2.5",
     "turbo": "^1.13.0"
   }
 }
