@@ -1,5 +1,8 @@
 {
   "name": "client-app",
+  "scripts": {
+    "build": "echo (pretend build here)"
+  },
   "dependencies": {
     "@mantine/core": "^7.7.1",
     "@mantine/hooks": "^7.7.1",

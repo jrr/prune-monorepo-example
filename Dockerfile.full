@@ -1,5 +1,7 @@
 FROM node:20-bookworm
 
+WORKDIR /usr/src/app
+
 RUN npm i -g pnpm@8.15.5
 
 COPY . .

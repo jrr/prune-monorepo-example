@@ -7,5 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build . --file Dockerfile --tag example-image
-      - run: docker image ls example-image
+      - run: docker build --file Dockerfile.full -t example-full .
+      - run: docker build -f Dockerfile.pruned -t example-pruned .
+      - run: docker image ls "example*"

@@ -1,0 +1,50 @@
+FROM node:20-bookworm as base
+
+WORKDIR /usr/src/app
+
+RUN npm i -g pnpm@8.15.5
+
+FROM base as prune
+
+RUN npm i -g turbo@1.13.0
+
+COPY . .
+
+RUN turbo prune --docker client-app
+
+FROM base as pruned_project_files
+
+COPY --from=prune /usr/src/app/out/json/ .
+
+FROM base as pruned_sources
+
+COPY --from=prune /usr/src/app/out/full/ .
+COPY --from=prune /usr/src/app/tsconfig.json .
+COPY --from=prune /usr/src/app/out/pnpm-lock.yaml .
+
+FROM pruned_project_files as node_modules_for_run
+
+RUN apt-get update && apt-get install -y \
+	g++ make
+
+RUN pnpm install --prod true
+
+FROM node_modules_for_run as node_modules_for_build
+
+RUN pnpm install --prod false --force
+
+FROM pruned_sources as build
+
+COPY --from=node_modules_for_build /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --from=node_modules_for_build /usr/src/app/shared-lib/node_modules /usr/src/app/shared-lib/node_modules
+COPY --from=node_modules_for_build /usr/src/app/client-app/node_modules /usr/src/app/client-app/node_modules
+
+RUN pnpm turbo --filter client-app build
+
+FROM pruned_sources as run
+
+COPY --from=node_modules_for_run /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --from=node_modules_for_run /usr/src/app/client-app/node_modules /usr/src/app/client-app/node_modules
+COPY --from=node_modules_for_run /usr/src/app/shared-lib/node_modules /usr/src/app/shared-lib/node_modules
+
+CMD echo hello world
